@@ -1,16 +1,17 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://fyp-backend-9t8k.onrender.com/api",
-  withCredentials: true, // keep only if you’re using cookies/sessions
+  baseURL: import.meta.env.VITE_API_URL || 'https://fyp-backend-9t8k.onrender.com/api',
+  withCredentials: true,
 });
 
-// ✅ Request interceptor: attach token if available
+
+// Add request interceptor to add Authorization header
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
