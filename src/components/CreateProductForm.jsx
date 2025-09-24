@@ -1,73 +1,81 @@
 import { useState } from "react";
-import uploadToCloudinary from "../lib/uploadToCloudinary";
-import { motion } from "framer-motion";
-import { PlusCircle, Upload, Loader } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
-import { toast } from "react-hot-toast";
 
 
 const categories = ["jeans", "t-shirts", "shoes", "glasses", "jackets", "suits", "bags", "gadgets" , "wrist-watchs"];
 
 
-const CreateProductForm = () => {
+const CreateProductForm = ({ initialProduct = null, onSuccess }) => {
        const [newProduct, setNewProduct] = useState({
-	       name: "",
-	       description: "",
-	       price: "",
-	       category: "",
-	       image: "",
+       	   name: "",
+       	   description: "",
+       	   price: "",
+       	   category: "",
+       	   image: "",
        });
-       const [imageFile, setImageFile] = useState(null);
+       const [message, setMessage] = useState("");
+       const [error, setError] = useState("");
        const { createProduct, loading } = useProductStore();
 
+       // Populate form if editing
+       useState(() => {
+       	   if (initialProduct) {
+       	   	   setNewProduct({
+       	   	   	   name: initialProduct.name || "",
+       	   	   	   description: initialProduct.description || "",
+       	   	   	   price: initialProduct.price || "",
+       	   	   	   category: initialProduct.category || "",
+       	   	   	   image: "",
+       	   	   });
+       	   }
+       }, [initialProduct]);
+
        const handleSubmit = async (e) => {
-	       e.preventDefault();
-	       let imageUrl = "";
-	       try {
-		       if (!imageFile) {
-			       toast.error("Please select an image");
-			       return;
-		       }
-		       // Determine folder based on user role (assume admin if localStorage.role is admin)
-		       const role = localStorage.getItem("role") || "seller";
-		       const folder = role === "admin" ? "admin_products" : "seller_products";
-		       imageUrl = await uploadToCloudinary(imageFile, folder);
-	       } catch {
-		       toast.error("Image upload failed");
-		       return;
-	       }
-	       try {
-		       await createProduct({ ...newProduct, image: imageUrl });
-		       setNewProduct({ name: "", description: "", price: "", category: "", image: "" });
-		       setImageFile(null);
-		       toast.success(" Product added successfully!");
-	       } catch {
-		       console.log("error creating a product");
-		       toast.error(" Failed to create product. Try again!");
-	       }
+       	   e.preventDefault();
+       	   setMessage("");
+       	   setError("");
+       	   if (!newProduct.image) {
+       	   	   setError("Please choose an image.");
+       	   	   return;
+       	   }
+       	   try {
+       	   	   const payload = {
+       	   	   	   name: newProduct.name,
+       	   	   	   description: newProduct.description,
+       	   	   	   price: newProduct.price,
+       	   	   	   category: newProduct.category,
+       	   	   	   image: newProduct.image,
+       	   	   };
+       	   	   await createProduct(payload);
+       	   	   setMessage(initialProduct ? "Product updated and pending approval." : "Product submitted. Awaiting approval.");
+       	   	   setNewProduct({ name: "", description: "", price: "", category: "", image: "" });
+       	   	   onSuccess && onSuccess();
+       	   } catch {
+       	   	   setError("Failed to create product. Please try again.");
+       	   }
        };
 
        const handleImageChange = (e) => {
-	       const file = e.target.files[0];
-	       if (file) {
-		       setImageFile(file);
-		       setNewProduct({ ...newProduct, image: file.name });
-	       }
+       	   const file = e.target.files && e.target.files[0];
+       	   if (!file) return;
+       	   const reader = new FileReader();
+       	   reader.onloadend = () => {
+       	   	   setNewProduct((prev) => ({ ...prev, image: reader.result }));
+       	   };
+       	   reader.readAsDataURL(file);
        };
 
 	return (
-		<motion.div
-			className='bg-gray-800 shadow-lg rounded-lg p-8 mb-8 max-w-xl mx-auto'
-			initial={{ opacity: 0, y: 20 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.8 }}
-		>
-			<h2 className='text-2xl font-semibold mb-6 text-emerald-300'>Create New Product</h2>
+		<div className='bg-white border rounded p-6 mb-8 max-w-xl mx-auto'>
+			<h2 className='text-xl font-semibold mb-4 text-gray-800'>Upload Product</h2>
+
+			{error && <div className='mb-4 text-sm text-red-600'>{error}</div>}
+			{message && <div className='mb-4 text-sm text-green-700'>{message}</div>}
 
 			<form onSubmit={handleSubmit} className='space-y-4'>
 				<div>
-					<label htmlFor='name' className='block text-sm font-medium text-gray-300'>
-						Product Name
+					<label htmlFor='name' className='block text-sm font-medium text-gray-700'>
+						Name
 					</label>
 					<input
 						type='text'
@@ -75,15 +83,13 @@ const CreateProductForm = () => {
 						name='name'
 						value={newProduct.name}
 						onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-						className='mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm py-2
-						 px-3 text-white focus:outline-none focus:ring-2
-						focus:ring-emerald-500 focus:border-emerald-500'
+						className='mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400'
 						required
 					/>
 				</div>
 
 				<div>
-					<label htmlFor='description' className='block text-sm font-medium text-gray-300'>
+					<label htmlFor='description' className='block text-sm font-medium text-gray-700'>
 						Description
 					</label>
 					<textarea
@@ -92,15 +98,13 @@ const CreateProductForm = () => {
 						value={newProduct.description}
 						onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
 						rows='3'
-						className='mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm
-						 py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 
-						 focus:border-emerald-500'
+						className='mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400'
 						required
 					/>
 				</div>
 
 				<div>
-					<label htmlFor='price' className='block text-sm font-medium text-gray-300'>
+					<label htmlFor='price' className='block text-sm font-medium text-gray-700'>
 						Price
 					</label>
 					<input
@@ -110,15 +114,13 @@ const CreateProductForm = () => {
 						value={newProduct.price}
 						onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
 						step='0.01'
-						className='mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md shadow-sm 
-						py-2 px-3 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500
-						 focus:border-emerald-500'
+						className='mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400'
 						required
 					/>
 				</div>
 
 				<div>
-					<label htmlFor='category' className='block text-sm font-medium text-gray-300'>
+					<label htmlFor='category' className='block text-sm font-medium text-gray-700'>
 						Category
 					</label>
 					<select
@@ -126,9 +128,7 @@ const CreateProductForm = () => {
 						name='category'
 						value={newProduct.category}
 						onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-						className='mt-1 block w-full bg-gray-700 border border-gray-600 rounded-md
-						 shadow-sm py-2 px-3 text-white focus:outline-none 
-						 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500'
+						className='mt-1 block w-full border border-gray-300 rounded-md py-2 px-3 text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-400 focus:border-gray-400'
 						required
 					>
 						<option value=''>Select a category</option>
@@ -140,39 +140,21 @@ const CreateProductForm = () => {
 					</select>
 				</div>
 
-				<div className='mt-1 flex items-center'>
-					<input type='file' id='image' className='sr-only' accept='image/*' onChange={handleImageChange} />
-					<label
-						htmlFor='image'
-						className='cursor-pointer bg-gray-700 py-2 px-3 border border-gray-600 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500'
-					>
-						<Upload className='h-5 w-5 inline-block mr-2' />
-						Upload Image
-					</label>
-					{newProduct.image && <span className='ml-3 text-sm text-gray-400'>Image uploaded </span>}
+				<div>
+					<label htmlFor='image' className='block text-sm font-medium text-gray-700'>Image</label>
+					<input type='file' id='image' accept='image/*' onChange={handleImageChange} className='mt-1 block w-full text-sm text-gray-900' />
+					{newProduct.image && <div className='mt-2 text-xs text-gray-600'>Image selected</div>}
 				</div>
 
 				<button
 					type='submit'
-					className='w-full flex justify-center py-2 px-4 border border-transparent rounded-md 
-					shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 
-					focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50'
+					className='w-full py-2 px-4 rounded text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60'
 					disabled={loading}
 				>
-					{loading ? (
-						<>
-							<Loader className='mr-2 h-5 w-5 animate-spin' aria-hidden='true' />
-							Loading...
-						</>
-					) : (
-						<>
-							<PlusCircle className='mr-2 h-5 w-5' />
-							Create Product
-						</>
-					)}
+					{loading ? "Submitting..." : "Submit"}
 				</button>
 			</form>
-		</motion.div>
+		</div>
 	);
 };
 export default CreateProductForm;

@@ -1,9 +1,6 @@
-// File: frontend/src/SignUpPage.jsx
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserPlus, Mail, Lock, User, ArrowRight, Loader } from "lucide-react";
-import { motion } from "framer-motion";
 import { useUserStore } from "../stores/useUserStore.js";
 
 const SignUpPage = () => {
@@ -15,7 +12,7 @@ const SignUpPage = () => {
     role: "buyer",
   });
 
-  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [passwordError, setPasswordError] = useState("");
   const [passwordTouched, setPasswordTouched] = useState(false);
 
   const { signup, loading, user, role, isAdmin } = useUserStore();
@@ -30,46 +27,50 @@ const SignUpPage = () => {
     }
   }, [user, role, isAdmin, navigate]);
 
-  // Password strength checker
-  const checkPasswordStrength = (password) => {
-    let strength = 0;
-    if (password.length >= 6) strength++;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[0-9]/.test(password)) strength++;
-    if (/[\W]/.test(password)) strength++; // special characters
-    setPasswordStrength(strength);
+  // Strong password validation
+  const validatePassword = (password) => {
+    const errors = [];
+    
+    if (password.length < 8) {
+      errors.push("at least 8 characters long");
+    }
+    if (!/[a-z]/.test(password)) {
+      errors.push("one lowercase letter");
+    }
+    if (!/[A-Z]/.test(password)) {
+      errors.push("one uppercase letter");
+    }
+    if (!/[0-9]/.test(password)) {
+      errors.push("one number");
+    }
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+      errors.push("one special character");
+    }
+    
+    if (errors.length > 0) {
+      return `Password must contain ${errors.join(", ")}.`;
+    }
+    
+    return "";
   };
 
-  const getStrengthLabel = () => {
-    switch (passwordStrength) {
-      case 0:
-        return "";
-      case 1:
-        return "Weak";
-      case 2:
-        return "Moderate";
-      case 3:
-        return "Strong";
-      case 4:
-        return "Very Strong";
-      default:
-        return "";
-    }
+  // Check if password is valid
+  const isPasswordValid = () => {
+    return validatePassword(formData.password) === "";
   };
 
-  const getStrengthColor = () => {
-    switch (passwordStrength) {
-      case 1:
-        return "bg-red-500";
-      case 2:
-        return "bg-yellow-500";
-      case 3:
-        return "bg-emerald-400";
-      case 4:
-        return "bg-green-600";
-      default:
-        return "";
-    }
+  // Check if passwords match
+  const doPasswordsMatch = () => {
+    return formData.password === formData.confirmPassword;
+  };
+
+  // Check if form is valid for submission
+  const isFormValid = () => {
+    return formData.name.trim() !== "" && 
+           formData.email.trim() !== "" && 
+           isPasswordValid() && 
+           doPasswordsMatch() && 
+           formData.role !== "";
   };
 
   const handleSubmit = (e) => {
@@ -79,31 +80,21 @@ const SignUpPage = () => {
 
   return (
     <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <motion.div
-        className="sm:mx-auto sm:w-full sm:max-w-md"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-emerald-400">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-6 text-center text-3xl font-bold text-blue-600">
           Create your account
         </h2>
-      </motion.div>
+      </div>
 
-      <motion.div
-        className="mt-8 sm:mx-auto sm:w-full sm:max-w-md"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        <div className="bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 border border-gray-300 rounded sm:px-10">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                 Full name
               </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
+              <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User className="h-5 w-5 text-gray-400" aria-hidden="true" />
                 </div>
@@ -113,18 +104,18 @@ const SignUpPage = () => {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                  placeholder="John Doe"
+                  className="block w-full px-3 py-2 pl-10 bg-white border border-gray-300 rounded placeholder-gray-400 focus:outline-none focus:border-blue-500 sm:text-sm"
+                  placeholder="Olabisi Samuel"
                 />
               </div>
             </div>
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
               </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
+              <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-400" aria-hidden="true" />
                 </div>
@@ -134,18 +125,18 @@ const SignUpPage = () => {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
-                  placeholder="you@example.com"
+                  className="block w-full px-3 py-2 pl-10 bg-white border border-gray-300 rounded placeholder-gray-400 focus:outline-none focus:border-blue-500 sm:text-sm"
+                  placeholder="sam@example.com"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
+              <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" aria-hidden="true" />
                 </div>
@@ -157,33 +148,27 @@ const SignUpPage = () => {
                   onChange={(e) => {
                     setFormData({ ...formData, password: e.target.value });
                     setPasswordTouched(true);
-                    checkPasswordStrength(e.target.value);
+                    setPasswordError(validatePassword(e.target.value));
                   }}
-                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                  className={`block w-full px-3 py-2 pl-10 bg-white border rounded placeholder-gray-400 focus:outline-none sm:text-sm ${
+                    passwordTouched && passwordError ? "border-red-300 focus:border-red-500" : "border-gray-300 focus:border-blue-500"
+                  }`}
                   placeholder="••••••••"
                 />
               </div>
 
-              {/* Password strength meter */}
-              {passwordTouched && (
-                <>
-                  <div className="mt-2 h-2 w-full bg-gray-600 rounded">
-                    <div
-                      className={`h-2 rounded ${getStrengthColor()}`}
-                      style={{ width: `${passwordStrength * 25}%` }}
-                    />
-                  </div>
-                  <p className="text-xs mt-1 text-gray-300">{getStrengthLabel()}</p>
-                </>
+              {/* Password error message */}
+              {passwordTouched && passwordError && (
+                <p className="mt-1 text-sm text-red-600">{passwordError}</p>
               )}
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                 Confirm Password
               </label>
-              <div className="mt-1 relative rounded-md shadow-sm">
+              <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" aria-hidden="true" />
                 </div>
@@ -193,22 +178,29 @@ const SignUpPage = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className="block w-full px-3 py-2 pl-10 bg-gray-700 border border-gray-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                  className={`block w-full px-3 py-2 pl-10 bg-white border rounded placeholder-gray-400 focus:outline-none sm:text-sm ${
+                    formData.confirmPassword && !doPasswordsMatch() ? "border-red-300 focus:border-red-500" : "border-gray-300 focus:border-blue-500"
+                  }`}
                   placeholder="••••••••"
                 />
               </div>
+              
+              {/* Password match error */}
+              {formData.confirmPassword && !doPasswordsMatch() && (
+                <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
+              )}
             </div>
 
             {/* Role */}
             <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-300">
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
                 Sign up as
               </label>
               <select
                 id="role"
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md shadow-sm text-white focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm"
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded text-gray-900 focus:outline-none focus:border-blue-500 sm:text-sm"
               >
                 <option value="buyer">Buyer</option>
                 <option value="seller">Seller</option>
@@ -218,12 +210,12 @@ const SignUpPage = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition duration-150 ease-in-out disabled:opacity-50"
-              disabled={loading}
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || !isFormValid()}
             >
               {loading ? (
                 <>
-                  <Loader className="mr-2 h-5 w-5 animate-spin" aria-hidden="true" />
+                  <Loader className="mr-2 h-5 w-5" aria-hidden="true" />
                   Loading...
                 </>
               ) : (
@@ -235,14 +227,14 @@ const SignUpPage = () => {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-sm text-gray-400">
+          <p className="mt-8 text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link to="/login" className="font-medium text-emerald-400 hover:text-emerald-300">
+            <Link to="/login" className="font-medium text-blue-600 hover:text-blue-700">
               Login here <ArrowRight className="inline h-4 w-4" />
             </Link>
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

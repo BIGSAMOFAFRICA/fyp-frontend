@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Trash, Star } from "lucide-react";
 import { useProductStore } from "../stores/useProductStore";
 
@@ -8,12 +7,7 @@ const ProductsList = ({ moderationMode = false }) => {
 	const naira = price => new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(price);
 
 	return (
-		<motion.div
-			className="bg-gray-800 shadow-lg rounded-lg overflow-x-auto max-w-4xl mx-auto w-full"
-			initial={{ opacity: 0, y: 20 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.8 }}
-		>
+		<div className="bg-gray-800 shadow rounded overflow-x-auto max-w-4xl mx-auto w-full">
 			<table className="min-w-full divide-y divide-gray-700">
 				<thead className="bg-gray-700">
 					<tr>
@@ -101,7 +95,7 @@ const ProductsList = ({ moderationMode = false }) => {
 					)}
 				</tbody>
 			</table>
-		</motion.div>
+		</div>
 	);
 };
 export default ProductsList;

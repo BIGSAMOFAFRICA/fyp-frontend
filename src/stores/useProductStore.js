@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import toast from "react-hot-toast";
 import axios from "../lib/axios"; // Make sure baseURL is set in axios
+import toast from "react-hot-toast";
 
-export const useProductStore = create((set, get) => ({
+export const useProductStore = create((set) => ({
   products: [],
   loading: false,
 
@@ -17,10 +17,10 @@ export const useProductStore = create((set, get) => ({
         products: [...prevState.products, res.data],
         loading: false,
       }));
-      toast.success("Product created successfully");
+      return res.data;
     } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to create product");
       set({ loading: false });
+      throw error;
     }
   },
 
@@ -155,7 +155,7 @@ export const useProductStore = create((set, get) => ({
     try {
       const res = await axios.get("/products/featured");
       set({ products: res.data, loading: false });
-    } catch (error) {
+    } catch {
       toast.error("Failed to fetch featured products");
       set({ loading: false });
     }

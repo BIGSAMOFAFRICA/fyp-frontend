@@ -4,11 +4,13 @@
 import { useEffect, useState } from "react";
 import axios from "../lib/axios";
 import CreateProductForm from "../components/CreateProductForm";
+import MyProductsList from "../components/MyProductsList";
 
 const SellerDashboard = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [active, setActive] = useState("upload"); // upload | products | orders | earnings
 
   const fetchAnalytics = async () => {
     setLoading(true);
@@ -26,14 +28,10 @@ const SellerDashboard = () => {
   };
   useEffect(() => {
     fetchAnalytics();
-    // Optionally, add a websocket or polling for live updates
   }, []);
 
   // Withdraw logic placeholder (no wallet balance in grouped data)
-  const handleWithdraw = async () => {
-    // Withdraw logic placeholder (no wallet balance in grouped data)
-    // No-op
-  };
+  // Withdraw placeholder removed (not used)
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
   if (error) return <div className="text-center text-red-500 py-10">{error}</div>;
@@ -42,85 +40,116 @@ const SellerDashboard = () => {
   // (safeNum removed, not needed)
 
 
-  const { analytics: counts, totalRevenue, pendingProducts, approvedProducts, rejectedProducts, recentTransactions } = analytics;
+  const { analytics: counts, totalRevenue, recentTransactions } = analytics;
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold text-emerald-600 mb-8 text-center">Seller Dashboard</h1>
-      <div className="mb-8 grid grid-cols-4 gap-4">
-        <div className="bg-white rounded shadow p-5 flex flex-col items-center">
-          <span className="text-gray-500 text-sm">Pending</span>
-          <span className="text-2xl font-bold text-yellow-500">{counts?.pending ?? 0}</span>
-        </div>
-        <div className="bg-white rounded shadow p-5 flex flex-col items-center">
-          <span className="text-gray-500 text-sm">Approved</span>
-          <span className="text-2xl font-bold text-emerald-600">{counts?.approved ?? 0}</span>
-        </div>
-        <div className="bg-white rounded shadow p-5 flex flex-col items-center">
-          <span className="text-gray-500 text-sm">Rejected</span>
-          <span className="text-2xl font-bold text-red-500">{counts?.rejected ?? 0}</span>
-        </div>
-        <div className="bg-white rounded shadow p-5 flex flex-col items-center">
-          <span className="text-gray-500 text-sm">Revenue</span>
-          <span className="text-2xl font-bold text-blue-600">₦{Number(totalRevenue || 0).toLocaleString()}</span>
-        </div>
-      </div>
-      <CreateProductForm onProductCreated={fetchAnalytics} />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div className="bg-white rounded shadow p-6">
-          <h2 className="text-lg font-semibold text-yellow-500 mb-3">Pending Products</h2>
-          {pendingProducts && pendingProducts.length ? (
-            <ul>
-              {pendingProducts.map((p) => (
-                <li key={p._id} className="mb-2 flex justify-between items-center">
-                  <span>{p.name}</span>
-                  <span className="text-xs text-gray-400">{p.category}</span>
-                </li>
-              ))}
-            </ul>
-          ) : <div className="text-gray-400">No pending products</div>}
-        </div>
-        <div className="bg-white rounded shadow p-6">
-          <h2 className="text-lg font-semibold text-emerald-600 mb-3">Approved Products</h2>
-          {approvedProducts && approvedProducts.length ? (
-            <ul>
-              {approvedProducts.map((p) => (
-                <li key={p._id} className="mb-2 flex justify-between items-center">
-                  <span>{p.name}</span>
-                  <span className="text-xs text-gray-400">{p.category}</span>
-                </li>
-              ))}
-            </ul>
-          ) : <div className="text-gray-400">No approved products</div>}
-        </div>
-        <div className="bg-white rounded shadow p-6">
-          <h2 className="text-lg font-semibold text-red-500 mb-3">Rejected Products</h2>
-          {rejectedProducts && rejectedProducts.length ? (
-            <ul>
-              {rejectedProducts.map((p) => (
-                <li key={p._id} className="mb-2 flex justify-between items-center">
-                  <span>{p.name}</span>
-                  <span className="text-xs text-gray-400">{p.category}</span>
-                </li>
-              ))}
-            </ul>
-          ) : <div className="text-gray-400">No rejected products</div>}
-        </div>
-      </div>
-      <div className="mt-10">
-        <h2 className="text-xl font-semibold mb-4">Recent Transactions</h2>
-        {recentTransactions && recentTransactions.length ? (
-          <ul className="divide-y divide-gray-200">
-            {recentTransactions.map((t) => (
-              <li key={t._id} className="py-2 flex justify-between items-center">
-                <span>
-                  <span className="font-medium">{t.product?.name}</span> sold to <span className="font-medium">{t.buyer?.name}</span>
-                </span>
-                <span className="text-blue-600 font-bold">₦{Number(t.amount || 0).toLocaleString()}</span>
+    <div className="max-w-6xl mx-auto py-8 px-4">
+      <h1 className="text-2xl font-bold mb-6 text-gray-900">Seller Dashboard</h1>
+
+      <div className="flex flex-col md:flex-row gap-6">
+        <aside className="w-full md:w-56 flex-shrink-0">
+          <nav className="bg-white rounded border border-gray-300 p-3">
+            <ul className="space-y-2">
+              <li>
+                <button onClick={() => setActive("upload")} className={`w-full text-left px-3 py-2 rounded ${active === "upload" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>
+                  Upload Product
+                </button>
               </li>
-            ))}
-          </ul>
-        ) : <div className="text-gray-400">No revenue yet</div>}
+              <li>
+                <button onClick={() => setActive("products")} className={`w-full text-left px-3 py-2 rounded ${active === "products" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>
+                  My Products
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setActive("orders")} className={`w-full text-left px-3 py-2 rounded ${active === "orders" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>
+                  Orders
+                </button>
+              </li>
+              <li>
+                <button onClick={() => setActive("earnings")} className={`w-full text-left px-3 py-2 rounded ${active === "earnings" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}>
+                  Earnings
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </aside>
+
+        <main className="flex-1">
+          {active === "upload" && (
+            <div className="bg-white rounded border border-gray-300 p-4">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900">Create Product</h2>
+              <CreateProductForm onProductCreated={fetchAnalytics} />
+            </div>
+          )}
+
+          {active === "products" && (
+            <div className="bg-white rounded border border-gray-300 p-4">
+              <MyProductsList />
+            </div>
+          )}
+
+          {active === "orders" && (
+            <div className="bg-white rounded border border-gray-300 p-4">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900">Orders</h2>
+              {recentTransactions && recentTransactions.length ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-gray-300">
+                        <th className="text-left py-2 px-2 text-gray-900">Product Name</th>
+                        <th className="text-left py-2 px-2 text-gray-900">Buyer ID</th>
+                        <th className="text-left py-2 px-2 text-gray-900">Status</th>
+                        <th className="text-right py-2 px-2 text-gray-900">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentTransactions.map((t) => (
+                        <tr key={t._id} className="border-b border-gray-300">
+                          <td className="py-2 px-2 text-gray-900">{t.product?.name || 'N/A'}</td>
+                          <td className="py-2 px-2 font-mono text-xs text-gray-600">{t.buyer?._id || 'N/A'}</td>
+                          <td className="py-2 px-2">
+                            <span className={`px-2 py-1 rounded text-xs ${
+                              t.status === 'approved' ? 'bg-green-600 text-white' :
+                              t.status === 'pending' ? 'bg-yellow-600 text-white' :
+                              t.status === 'rejected' ? 'bg-red-600 text-white' :
+                              'bg-gray-600 text-white'
+                            }`}>
+                              {t.status || 'Unknown'}
+                            </span>
+                          </td>
+                          <td className="py-2 px-2 text-right text-gray-900">₦{Number(t.amount || 0).toLocaleString()}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : <div className="text-gray-600 text-sm">No orders yet</div>}
+            </div>
+          )}
+
+          {active === "earnings" && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white rounded border border-gray-300 p-4 text-center">
+                  <div className="text-gray-600 text-sm">Pending</div>
+                  <div className="text-xl font-bold text-gray-900">{counts?.pending ?? 0}</div>
+                </div>
+                <div className="bg-white rounded border border-gray-300 p-4 text-center">
+                  <div className="text-gray-600 text-sm">Approved</div>
+                  <div className="text-xl font-bold text-gray-900">{counts?.approved ?? 0}</div>
+                </div>
+                <div className="bg-white rounded border border-gray-300 p-4 text-center">
+                  <div className="text-gray-600 text-sm">Rejected</div>
+                  <div className="text-xl font-bold text-gray-900">{counts?.rejected ?? 0}</div>
+                </div>
+                <div className="bg-white rounded border border-gray-300 p-4 text-center">
+                  <div className="text-gray-600 text-sm">Revenue</div>
+                  <div className="text-xl font-bold text-gray-900">₦{Number(totalRevenue || 0).toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

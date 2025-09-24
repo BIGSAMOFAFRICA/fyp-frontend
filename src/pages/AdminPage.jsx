@@ -1,6 +1,5 @@
 import { BarChart, PlusCircle, ShoppingBasket } from "lucide-react";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 import AnalyticsTab from "../components/AnalyticsTab";
 import CreateProductForm from "../components/CreateProductForm";
@@ -88,16 +87,9 @@ const AdminPage = () => {
 						return (
 							<div className='min-h-screen relative overflow-hidden'>
 								<div className='relative z-10 container mx-auto px-2 sm:px-4 py-8 sm:py-16'>
-									<motion.h1
-										className='text-4xl font-bold mb-8 text-emerald-400 text-center'
-										initial={{ opacity: 0, y: -20 }}
-										animate={{ opacity: 1, y: 0 }}
-										transition={{ duration: 0.8 }}
-									>
-										Admin Dashboard
-									</motion.h1>
+									<h1 className='text-3xl font-bold mb-8 text-emerald-400 text-center'>Admin Dashboard</h1>
 
-											{/* Analytics section: Only these four cards, dynamically loaded */}
+									{/* Analytics section: Only these four cards, dynamically loaded */}
 				<div className="mb-8 w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
 					<div className="bg-gray-800 rounded-lg shadow p-6 flex flex-col items-center justify-center">
 						<div className="text-gray-400 text-sm mb-1">Total Users</div>
@@ -125,60 +117,60 @@ const AdminPage = () => {
 					</div>
 				</div>
 
-								<div className='flex flex-wrap justify-center mb-8 gap-2'>
-									{tabs.map((tab) => (
-										<button
-											key={tab.id}
-											onClick={() => setActiveTab(tab.id)}
-											className={`flex items-center px-4 py-2 rounded-md transition-colors duration-200 ${
-												activeTab === tab.id
-													? "bg-emerald-600 text-white"
-													: "bg-gray-700 text-gray-300 hover:bg-gray-600"
-											}`}
-										>
-											<tab.icon className='mr-2 h-5 w-5' />
-											{tab.label}
-										</button>
-									))}
-								</div>
-												{activeTab === "pending" && <ProductsList moderationMode />}
-												{activeTab === "transactions" && (
-													<div className="bg-gray-800 rounded-lg shadow p-6 max-w-3xl mx-auto">
-														<h2 className="text-xl font-bold mb-4 text-emerald-400">Pending Transactions</h2>
-														{txLoading ? (
-															<div className="text-gray-400">Loading...</div>
-														) : pendingTransactions.length === 0 ? (
-															<div className="text-gray-400">No pending transactions</div>
-														) : (
-															<ul className="divide-y divide-gray-700">
-																{pendingTransactions.map((tx) => (
-																	<li key={tx._id} className="py-3 flex justify-between items-center">
-																		<div>
-																			<span className="font-semibold">{tx.product?.name || 'Product'}</span> - ₦{Number(tx.amount).toLocaleString()}<br/>
-																			<span className="text-xs text-gray-400">Buyer: {tx.buyer?.name || tx.buyerId}</span>
-																		</div>
-																		<div className="flex gap-2">
-																			<button onClick={() => handleTxAction(tx._id, "approve")}
-																				className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded">
-																				Approve
-																			</button>
-																			<button onClick={() => handleTxAction(tx._id, "reject")}
-																				className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
-																				Reject
-																			</button>
-																		</div>
-																	</li>
-																))}
-															</ul>
-														)}
-													</div>
-												)}
-												{activeTab === "products" && <ProductsList />}
-												{activeTab === "create" && <CreateProductForm />}
-												{activeTab === "analytics" && <AnalyticsTab />}
+									<div className='flex flex-wrap justify-center mb-8 gap-2'>
+										{tabs.map((tab) => (
+											<button
+												key={tab.id}
+												onClick={() => setActiveTab(tab.id)}
+												className={`flex items-center px-4 py-2 rounded-md ${
+													activeTab === tab.id
+														? "bg-emerald-600 text-white"
+														: "bg-gray-700 text-gray-300"
+												}`}
+											>
+												<tab.icon className='mr-2 h-5 w-5' />
+												{tab.label}
+											</button>
+										))}
+									</div>
+											{activeTab === "pending" && <ProductsList moderationMode />}
+											{activeTab === "transactions" && (
+												<div className="bg-gray-800 rounded-lg shadow p-6 max-w-3xl mx-auto">
+													<h2 className="text-xl font-bold mb-4 text-emerald-400">Pending Transactions</h2>
+													{txLoading ? (
+														<div className="text-gray-400">Loading...</div>
+													) : pendingTransactions.length === 0 ? (
+														<div className="text-gray-400">No pending transactions</div>
+													) : (
+														<ul className="divide-y divide-gray-700">
+															{pendingTransactions.map((tx) => (
+																<li key={tx._id} className="py-3 flex justify-between items-center">
+																	<div>
+																		<span className="font-semibold">{tx.product?.name || 'Product'}</span> - ₦{Number(tx.amount).toLocaleString()}<br/>
+																		<span className="text-xs text-gray-400">Buyer: {tx.buyer?.name || tx.buyerId}</span>
+																	</div>
+																	<div className="flex gap-2">
+																		<button onClick={() => handleTxAction(tx._id, "approve")}
+																			className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded">
+																			Approve
+																		</button>
+																		<button onClick={() => handleTxAction(tx._id, "reject")}
+																			className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
+																			Reject
+																		</button>
+																	</div>
+																</li>
+															))}
+														</ul>
+													)}
+												</div>
+											)}
+											{activeTab === "products" && <ProductsList />}
+											{activeTab === "create" && <CreateProductForm />}
+											{activeTab === "analytics" && <AnalyticsTab />}
+									</div>
 							</div>
-						</div>
-					);
+						);
 };
 
 export default AdminPage;

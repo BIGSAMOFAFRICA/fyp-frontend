@@ -23,49 +23,22 @@ const HomePage = () => {
   }, [fetchApprovedProducts]);
 
   return (
-    <div className='relative min-h-screen text-white overflow-hidden'>
-      {/* Welcome Section */}
-      <div className='relative z-10 flex flex-col items-center justify-center h-full bg-black/50 backdrop-blur-sm'>
-        <h1 className='text-5xl sm:text-6xl font-bold text-emerald-400 mb-4 text-center animate__animated animate__fadeIn animate__delay-1s'>
-          Elevate Your Style at B-MART
-        </h1>
-        <p className='text-xl text-gray-300 text-center px-4 animate__animated animate__fadeIn animate__delay-2s'>
-          Curated fashion, trending gadgets, and more — shop the best, look your best.
-        </p>
+    <div className='min-h-screen text-gray-900'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10'>
+        <h1 className='text-4xl sm:text-5xl font-bold text-blue-600 mb-2 text-center'>B-MART</h1>
+        <p className='text-base text-gray-600 text-center mb-10'>Simple store with basic categories and featured items.</p>
 
-        {/* Scroll Down Button */}
-        <a href="#categories" className="mt-12 animate-bounce text-white">
-          <div className="flex flex-col items-center">
-            <span className="text-sm">Scroll Down</span>
-            <svg
-              className="w-6 h-6 mt-1 text-emerald-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
-        </a>
-      </div>
-
-      {/* Categories Section */}
-      <div id="categories" className='relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16'>
-        <h2 className='text-center text-4xl sm:text-5xl font-bold text-emerald-400 mb-4 opacity-0 animate__animated animate__fadeIn animate__delay-3s'>
-          Explore Our Categories
-        </h2>
-        <p className='text-center text-lg text-gray-300 mb-12 opacity-0 animate__animated animate__fadeIn animate__delay-4s'>
-          Discover the latest trends in eco-friendly fashion
-        </p>
+        <div id="categories">
+          <h2 className='text-2xl sm:text-3xl font-semibold text-blue-600 mb-2 text-center'>Categories</h2>
+          <p className='text-center text-sm text-gray-600 mb-8'>Browse by what you need</p>
 
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
           {categories.map((category) => (
             <CategoryItem category={category} key={category.name} />
           ))}
         </div>
+        </div>
 
-        {/* Featured Products */}
         {!isLoading && products.length > 0 && (
           <FeaturedProducts featuredProducts={products} />
         )}

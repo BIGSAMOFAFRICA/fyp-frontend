@@ -2,14 +2,14 @@ import { Link } from "react-router-dom";
 
 const CategoryItem = ({ category }) => {
 	return (
-		<div className='relative overflow-hidden h-96 w-full rounded-lg group'>
+		<div className='relative h-96 w-full rounded border border-gray-300'>
 			<Link to={"/category" + category.href}>
 				<div className='w-full h-full cursor-pointer'>
-					<div className='absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-50 z-10' />
+					<div className='absolute inset-0 bg-black bg-opacity-30 z-10' />
 					<img
 						src={category.imageUrl}
 						alt={category.name}
-						className='w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110'
+						className='w-full h-full object-cover'
 						loading='lazy'
 					/>
 					<div className='absolute bottom-0 left-0 right-0 p-4 z-20'>

@@ -26,13 +26,13 @@ const BuyerDashboard = ({ buyerId }) => {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold text-emerald-600 mb-8 text-center">Buyer Dashboard</h1>
-      <div className="bg-white rounded shadow p-5 mb-8">
-        <span className="text-gray-500 text-sm">Wallet Balance</span>
+      <h1 className="text-3xl font-bold text-blue-600 mb-8 text-center">Buyer Dashboard</h1>
+      <div className="bg-white rounded border border-gray-300 p-5 mb-8">
+        <span className="text-gray-600 text-sm">Wallet Balance</span>
         <span className="text-2xl font-bold text-blue-600">₦{data.walletBalance}</span>
       </div>
-      <div className="bg-white rounded shadow p-6">
-        <h2 className="text-lg font-semibold text-emerald-600 mb-3">Transactions</h2>
+      <div className="bg-white rounded border border-gray-300 p-6">
+        <h2 className="text-lg font-semibold text-blue-600 mb-3">Transactions</h2>
         <table className="min-w-full divide-y divide-gray-200">
           <thead>
             <tr>
