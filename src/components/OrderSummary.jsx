@@ -3,9 +3,10 @@ import { useUserStore } from "../stores/useUserStore";
 import { Link } from "react-router-dom";
 import { MoveRight } from "lucide-react";
 import { useState } from "react";
+import axios from "../lib/axios";
 
 const OrderSummary = () => {
-  const { total, subtotal, cart } = useCartStore();
+  const { total, cart } = useCartStore();
   const { user } = useUserStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -30,19 +31,17 @@ const OrderSummary = () => {
     try {
       const payload = {
         products: cart,
-        email: user.email,
+        couponCode: null, 
       };
       console.log("Sending payment request with payload:", payload);
 
-      // Use the correct backend URL for payment initialization (matches backend route)
-      const apiBase = import.meta.env.VITE_API_URL || 'https://fyp-backend-9t8k.onrender.com/api';
+      
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const backendUrl = `${apiBase}/payments/create-checkout-session`;
-      const response = await import("../lib/axios").then(m =>
-        m.default.post(backendUrl, payload)
-      );
+      const response = await axios.post(backendUrl, payload);
       const { url, success_url, cancel_url } = response.data;
       if (url) {
-        // Store success/cancel URLs in sessionStorage for later use if needed
+        
         if (success_url) sessionStorage.setItem("payment_success_url", success_url);
         if (cancel_url) sessionStorage.setItem("payment_cancel_url", cancel_url);
         window.location.href = url;
@@ -51,12 +50,23 @@ const OrderSummary = () => {
         setLoading(false);
       }
     } catch (error) {
-      let message = "Payment failed. Please try again.";
-      if (error.response && error.response.data && error.response.data.message) {
-        message = error.response.data.message;
+      console.error("Payment initialization error:", error);
+      let message = "Payment initialization failed. Please try again.";
+      
+      if (error.response) {
+        if (error.response.status === 401) {
+          message = "Please log in to continue with payment.";
+        } else if (error.response.status === 400) {
+          message = error.response.data?.message || "Invalid payment request. Please check your cart.";
+        } else if (error.response.status >= 500) {
+          message = "Server error. Please try again in a moment.";
+        } else {
+          message = error.response.data?.message || "Payment failed. Please try again.";
+        }
       } else if (error.message) {
         message = error.message;
       }
+      
       setError(message);
       setLoading(false);
     }

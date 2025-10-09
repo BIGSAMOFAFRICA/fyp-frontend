@@ -17,7 +17,7 @@ const CreateProductForm = ({ initialProduct = null, onSuccess }) => {
        const [error, setError] = useState("");
        const { createProduct, loading } = useProductStore();
 
-       // Populate form if editing
+       
        useState(() => {
        	   if (initialProduct) {
        	   	   setNewProduct({

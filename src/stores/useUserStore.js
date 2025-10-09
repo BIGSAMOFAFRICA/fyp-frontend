@@ -1,5 +1,5 @@
-// File: frontend/stores/useUserStore.js
-// Instructions: Replace the existing `useUserStore.js` in `frontend/stores/` with this content.
+
+
 
 import { create } from "zustand";
 import axios from "../lib/axios";
@@ -56,7 +56,7 @@ export const useUserStore = create((set, get) => ({
   login: async (email, password, navigate) => {
     set({ loading: true });
     try {
-      // Admin bypass: skip verification check for this email
+      
       if (email === "olabisisamuelayomide@gmail.com") {
         const res = await axios.post("/auth/login", { email, password });
         if (res?.data) {
@@ -69,7 +69,7 @@ export const useUserStore = create((set, get) => ({
         }
         return;
       }
-      // Normal user flow
+      
       const res = await axios.post("/auth/login", { email, password });
       if (res?.data) {
         const isAdmin = res.data.email === "olabisisamuelayomide@gmail.com";
@@ -131,8 +131,7 @@ export const useUserStore = create((set, get) => ({
         set({ checkingAuth: false });
         toast.error("Failed to fetch profile");
       }
-    } catch (error) {
-      console.log("Auth check error:", error.message);
+    } catch {
       set({ user: null, role: "buyer", checkingAuth: false });
     }
   },
@@ -144,11 +143,16 @@ export const useUserStore = create((set, get) => ({
       const res = await axios.post("/auth/refresh-token");
       set({ checkingAuth: false });
       if (res?.data) {
+        // Update the token in localStorage
+        if (res.data.accessToken) {
+          localStorage.setItem("accessToken", res.data.accessToken);
+        }
         return res.data;
       } else {
         throw new Error("No data from refresh token");
       }
     } catch (error) {
+      console.error("Token refresh failed:", error);
       set({ user: null, role: "buyer", checkingAuth: false });
       throw error;
     }
@@ -174,8 +178,15 @@ axios.interceptors.response.use(
           refreshPromise = null;
         }
 
+        // Update the authorization header with the new token
+        const newToken = localStorage.getItem("accessToken");
+        if (newToken) {
+          originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+        }
+
         return axios(originalRequest);
       } catch (refreshError) {
+        console.error("Token refresh failed, logging out:", refreshError);
         useUserStore.getState().logout();
         return Promise.reject(refreshError);
       }

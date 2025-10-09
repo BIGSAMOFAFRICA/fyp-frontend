@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import axios from "../lib/axios"; // Make sure baseURL is set in axios
+import axios from "../lib/axios"; 
 import toast from "react-hot-toast";
 
 export const useProductStore = create((set) => ({
@@ -8,7 +8,7 @@ export const useProductStore = create((set) => ({
 
   setProducts: (products) => set({ products }),
 
-  // CREATE PRODUCT
+  
   createProduct: async (productData) => {
     set({ loading: true });
     try {
@@ -24,7 +24,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // FETCH ALL PRODUCTS (ADMIN)
+  
   fetchAllProducts: async () => {
     set({ loading: true });
     try {
@@ -36,7 +36,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // FETCH APPROVED PRODUCTS (HOME PAGE)
+  
   fetchApprovedProducts: async () => {
     set({ loading: true });
     try {
@@ -48,7 +48,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // FETCH PENDING PRODUCTS (ADMIN)
+  
   fetchPendingProducts: async () => {
     set({ loading: true });
     try {
@@ -63,7 +63,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // APPROVE PRODUCT (ADMIN)
+  
   approveProduct: async (productId) => {
     set({ loading: true });
     try {
@@ -82,7 +82,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // REJECT PRODUCT (ADMIN)
+  
   rejectProduct: async (productId) => {
     set({ loading: true });
     try {
@@ -101,7 +101,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // FETCH PRODUCTS BY CATEGORY
+  
   fetchProductsByCategory: async (category) => {
     set({ loading: true });
     try {
@@ -113,7 +113,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // DELETE PRODUCT
+  
   deleteProduct: async (productId) => {
     set({ loading: true });
     try {
@@ -129,7 +129,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // TOGGLE FEATURED PRODUCT
+  
   toggleFeaturedProduct: async (productId) => {
     set({ loading: true });
     try {
@@ -149,7 +149,7 @@ export const useProductStore = create((set) => ({
     }
   },
 
-  // FETCH FEATURED PRODUCTS
+  
   fetchFeaturedProducts: async () => {
     set({ loading: true });
     try {

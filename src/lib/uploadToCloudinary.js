@@ -1,12 +1,12 @@
-// Utility to upload an image to Cloudinary and return the URL
-// Usage: import uploadToCloudinary from './uploadToCloudinary';
 
 
 
 
 
-// Shared Cloudinary upload utility for Admin and Seller dashboards
-// Reads config from Vite env (which must be set in .env as VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET)
+
+
+
+
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
@@ -14,12 +14,6 @@ if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
   throw new Error("Cloudinary config missing: check VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET in your .env");
 }
 
-/**
- * Uploads an image to Cloudinary and returns the secure_url.
- * @param {File} file - The image file to upload
- * @param {string} folder - The Cloudinary folder to upload to (e.g., 'admin_products' or 'seller_products')
- * @returns {Promise<string>} - The Cloudinary secure_url
- */
 export default async function uploadToCloudinary(file, folder = "") {
   const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
   const formData = new FormData();

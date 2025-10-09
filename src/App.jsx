@@ -1,4 +1,4 @@
-// App shell and routes
+
 
 import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
@@ -18,9 +18,11 @@ import LoadingSpinner from "./components/LoadingSpinner";
 import CartPage from "./pages/CartPage";
 import { useCartStore } from "./stores/useCartStore";
 import PurchaseCancelPage from "./pages/PurchaseCancelPage";
-import PurchaseSuccess from "./pages/PurchaseSuccess";
+import PurchaseSuccessPage from "./pages/PurchaseSuccessPage";
+import OrderCompletedPage from "./pages/OrderCompletedPage";
 import RequestPasswordReset from "./pages/RequestPasswordReset";
 import ResetPassword from "./pages/ResetPassword";
+import TransactionCheckPage from "./pages/TransactionCheckPage";
 
 const App = () => {
   const { user, checkAuth, checkingAuth, role, isAdmin } = useUserStore();
@@ -46,17 +48,19 @@ const App = () => {
           <Route path="/signup" element={!user ? <SignUpPage /> : <Navigate to="/" />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
-          {/* Admin dashboard */}
+          {}
           <Route path="/admin/dashboard" element={user && isAdmin() ? <AdminPage /> : <Navigate to="/login" />} />
-          {/* Seller dashboard */}
+          {}
           <Route path="/seller/dashboard" element={user && role === "seller" ? <SellerDashboard sellerId={user?._id} /> : <Navigate to="/login" />} />
-          {/* Buyer dashboard */}
+          {}
           <Route path="/buyer/dashboard" element={user && role === "buyer" ? <BuyerDashboard buyerId={user?._id} /> : <Navigate to="/login" />} />
           <Route path="/add-product" element={user && role === "seller" ? <AddProductPage /> : <Navigate to="/login" />} />
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/cart" element={user ? <CartPage /> : <Navigate to="/login" />} />
-          <Route path="/purchase-success" element={<PurchaseSuccess />} />
-          <Route path="/purchase-cancel" element={user ? <PurchaseCancelPage /> : <Navigate to="/login" />} />
+          <Route path="/purchase-success" element={<PurchaseSuccessPage />} />
+          <Route path="/order-completed" element={<OrderCompletedPage />} />
+          <Route path="/purchase-cancel" element={<PurchaseCancelPage />} />
+          <Route path="/check-transaction/:reference" element={<TransactionCheckPage />} />
           <Route path="/forgot-password" element={<RequestPasswordReset />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>

@@ -27,7 +27,7 @@ const SignUpPage = () => {
     }
   }, [user, role, isAdmin, navigate]);
 
-  // Strong password validation
+  
   const validatePassword = (password) => {
     const errors = [];
     
@@ -54,17 +54,17 @@ const SignUpPage = () => {
     return "";
   };
 
-  // Check if password is valid
+  
   const isPasswordValid = () => {
     return validatePassword(formData.password) === "";
   };
 
-  // Check if passwords match
+  
   const doPasswordsMatch = () => {
     return formData.password === formData.confirmPassword;
   };
 
-  // Check if form is valid for submission
+  
   const isFormValid = () => {
     return formData.name.trim() !== "" && 
            formData.email.trim() !== "" && 
@@ -89,7 +89,7 @@ const SignUpPage = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 border border-gray-300 rounded sm:px-10">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name */}
+            {}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700">
                 Full name
@@ -110,7 +110,7 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Email */}
+            {}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
@@ -131,7 +131,7 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Password */}
+            {}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
@@ -157,13 +157,13 @@ const SignUpPage = () => {
                 />
               </div>
 
-              {/* Password error message */}
+              {}
               {passwordTouched && passwordError && (
                 <p className="mt-1 text-sm text-red-600">{passwordError}</p>
               )}
             </div>
 
-            {/* Confirm Password */}
+            {}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                 Confirm Password
@@ -185,13 +185,13 @@ const SignUpPage = () => {
                 />
               </div>
               
-              {/* Password match error */}
+              {}
               {formData.confirmPassword && !doPasswordsMatch() && (
                 <p className="mt-1 text-sm text-red-600">Passwords do not match</p>
               )}
             </div>
 
-            {/* Role */}
+            {}
             <div>
               <label htmlFor="role" className="block text-sm font-medium text-gray-700">
                 Sign up as
@@ -207,7 +207,7 @@ const SignUpPage = () => {
               </select>
             </div>
 
-            {/* Submit Button */}
+            {}
             <button
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
