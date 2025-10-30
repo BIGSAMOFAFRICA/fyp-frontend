@@ -19,7 +19,7 @@ const SignUpPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user && user.isVerified) {
+    if (user) {
       if (isAdmin()) navigate("/admin/dashboard", { replace: true });
       else if (role === "seller") navigate("/seller/dashboard", { replace: true });
       else if (role === "buyer") navigate("/buyer/dashboard", { replace: true });

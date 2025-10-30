@@ -40,8 +40,8 @@ export const useUserStore = create((set, get) => ({
       if (res?.data) {
         
         set({ loading: false });
-        toast.success("Please check your email to verify your account");
-        navigate("/verify-email", { state: { email } });
+        toast.success("Signed up successfully!");
+        navigate("/login");
       } else {
         set({ loading: false });
         toast.error("Signup failed: No response data");
@@ -83,12 +83,7 @@ export const useUserStore = create((set, get) => ({
     } catch (error) {
       set({ loading: false });
       const message = error.response?.data?.message || "An error occurred during login";
-      if (error.response?.status === 403 && error.response?.data?.isVerified === false) {
-        toast.error("Please verify your email to log in");
-        navigate("/verify-email", { state: { email: error.response.data.email } });
-      } else {
-        toast.error(message);
-      }
+      toast.error(message);
     }
   },
 

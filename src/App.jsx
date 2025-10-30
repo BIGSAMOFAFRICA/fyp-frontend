@@ -9,7 +9,7 @@ import SellerDashboard from "./pages/SellerDashboard";
 import BuyerDashboard from "./pages/BuyerDashboard";
 import CategoryPage from "./pages/CategoryPage";
 import AddProductPage from "./pages/AddProductPage";
-import VerifyEmail from "./components/VerifyEmail";
+// VerifyEmail component removed — signup no longer requires email OTP
 import Navbar from "./components/Navbar";
 import { Toaster } from "react-hot-toast";
 import { useUserStore } from "./stores/useUserStore";
@@ -46,7 +46,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/signup" element={!user ? <SignUpPage /> : <Navigate to="/" />} />
-          <Route path="/verify-email" element={<VerifyEmail />} />
+          {/* /verify-email route removed — not used anymore */}
           <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/" />} />
           {}
           <Route path="/admin/dashboard" element={user && isAdmin() ? <AdminPage /> : <Navigate to="/login" />} />
